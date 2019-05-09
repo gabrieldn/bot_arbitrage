@@ -7,6 +7,7 @@ import co.codingnomads.bot.arbitrage.model.ticker.TickerDataTrading;
 import co.codingnomads.bot.arbitrage.service.general.ExchangeDataGetter;
 import org.knowm.xchange.currency.CurrencyPair;
 import org.knowm.xchange.dto.account.Wallet;
+
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.concurrent.Callable;
@@ -14,7 +15,7 @@ import java.util.concurrent.TimeoutException;
 
 /**
  * Created by Thomas Leruth on 12/16/17
- *
+ * <p>
  * A runnable class using Callable<TickerData> to be able to return a TickerData
  */
 public class GetTickerDataThread implements Callable<TickerData> {
@@ -26,6 +27,7 @@ public class GetTickerDataThread implements Callable<TickerData> {
 
     /**
      * Find the TickerData for every exchanges as a callable (runnable with return)
+     *
      * @return the TickerData for the particular exchanges
      */
     @Override
@@ -46,7 +48,9 @@ public class GetTickerDataThread implements Callable<TickerData> {
                 baseFund = wallet.getBalance(currencyPair.base).getTotal();
                 counterFund = wallet.getBalance(currencyPair.counter).getTotal();
 
-            } catch (IOException e) { e.printStackTrace(); }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
 
             baseNeed = tradeAmountBase;
             counterNeed = tradeAmountBase.multiply(tickerData.getBid());

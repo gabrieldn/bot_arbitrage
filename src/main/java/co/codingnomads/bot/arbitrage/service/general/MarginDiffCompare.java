@@ -24,21 +24,20 @@ public class MarginDiffCompare {
      * @return the difference between the arbitrage margin and percent difference highBid and lowAsk
      */
     public BigDecimal diffWithMargin(TickerData lowAsk, TickerData highBid, double arbitrageMargin) {
-
+        return diffWithMargin(lowAsk.getAsk(), highBid.getBid(), arbitrageMargin);
+    }
+    public BigDecimal diffWithMargin(BigDecimal lowAsk, BigDecimal highBid, double arbitrageMargin) {
         MathContext mc = new MathContext(10);
 
-        BigDecimal highBidMinusLowAsk = highBid.getBid().subtract(lowAsk.getAsk());
+        BigDecimal highBidMinusLowAsk = highBid.subtract(lowAsk);
 
-        BigDecimal difference = highBidMinusLowAsk.divide(highBid.getBid(), mc);
+        BigDecimal difference = highBidMinusLowAsk.divide(highBid, mc);
 
         BigDecimal diffPercent = difference.multiply(BigDecimal.valueOf(100));
 
         BigDecimal differenceOfMarginFormatted = BigDecimal.valueOf(arbitrageMargin);
 
-        BigDecimal arbitragePerDiffSubMarg = diffPercent.subtract(differenceOfMarginFormatted);
-
-        return arbitragePerDiffSubMarg;
-
+        return diffPercent.subtract(differenceOfMarginFormatted);
     }
 
 
@@ -50,16 +49,16 @@ public class MarginDiffCompare {
      * @return percent difference highBid and lowAsk
      */
     public BigDecimal findDiff(TickerData lowAsk, TickerData highBid){
+        return findDiff(lowAsk.getAsk(), highBid.getBid());
+    }
 
+    public BigDecimal findDiff(BigDecimal lowAsk, BigDecimal highBid) {
         MathContext mc = new MathContext(10);
 
-        BigDecimal highBidMinusLowAsk = highBid.getBid().subtract(lowAsk.getAsk());
+        BigDecimal highBidMinusLowAsk = highBid.subtract(lowAsk);
 
-        BigDecimal difference = highBidMinusLowAsk.divide(highBid.getBid(), mc);
+        BigDecimal difference = highBidMinusLowAsk.divide(highBid, mc);
 
-        BigDecimal diffPercent = difference.multiply(BigDecimal.valueOf(100));
-
-        return diffPercent;
-
+        return difference.multiply(BigDecimal.valueOf(100));
     }
 }

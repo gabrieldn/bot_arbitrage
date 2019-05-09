@@ -54,7 +54,19 @@ public class ExchangeDataGetter {
                     if (null != tickerData) {
                         list.add(tickerData);
                     }
-                } catch (InterruptedException | ExecutionException e) {
+                } catch (ExecutionException e) {
+                    String message = e.getMessage();
+
+                    if (message == null) {
+                        message = "";
+                    }
+
+                    if (message.contains("Invalid symbol") || message.contains("ExchangeException")) {
+                        // Do nothing
+                    } else {
+                        e.printStackTrace();
+                    }
+                } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }

@@ -19,7 +19,7 @@ public interface EmailTimeMapper {
     /**
      * Selects the numbers of emails sent fot today's date fromt the bot.arbitrage schema in the email_info table
      */
-    String Get_Total_Calls_Today = "SELECT count(id) FROM `botarbitrage`.email_info where TimeOfCall > 'CURDATE()'";
+    String Get_Total_Calls_Today = "SELECT count(id) FROM `botarbitrage`.email_info where TimeOfCall > CURDATE()";
 
     /**
      * Inserts the results of INSERT_EmailRecord above

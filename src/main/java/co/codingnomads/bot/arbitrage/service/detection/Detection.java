@@ -1,27 +1,32 @@
 package co.codingnomads.bot.arbitrage.service.detection;
 
-import co.codingnomads.bot.arbitrage.action.detection.*;
+import co.codingnomads.bot.arbitrage.action.detection.DetectionLogAction;
+import co.codingnomads.bot.arbitrage.action.detection.DetectionPrintAction;
 import co.codingnomads.bot.arbitrage.action.detection.selection.DetectionActionSelection;
 import co.codingnomads.bot.arbitrage.exception.ExchangeDataException;
 import co.codingnomads.bot.arbitrage.exception.WaitTimeException;
+import co.codingnomads.bot.arbitrage.exchange.ExchangeSpecs;
 import co.codingnomads.bot.arbitrage.model.detection.DifferenceWrapper;
 import co.codingnomads.bot.arbitrage.model.exchange.ActivatedExchange;
 import co.codingnomads.bot.arbitrage.model.ticker.TickerData;
-import co.codingnomads.bot.arbitrage.exchange.ExchangeSpecs;
 import co.codingnomads.bot.arbitrage.service.general.DataUtil;
 import co.codingnomads.bot.arbitrage.service.general.ExchangeDataGetter;
 import co.codingnomads.bot.arbitrage.service.general.ExchangeGetter;
+import co.codingnomads.bot.arbitrage.service.general.MarginDiffCompare;
 import org.knowm.xchange.currency.CurrencyPair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by Thomas Leruth on 12/18/17
- *
+ * <p>
  * Detection bot class
  */
 @Service
@@ -40,6 +45,7 @@ public class Detection {
     /**
      * run method for both detection print and log actions. Determines which action is being run and either prints
      * detection information to the console or log it to a database.
+     *
      * @param currencyPairList
      * @param selectedExchanges
      * @param detectionActionSelection
@@ -116,26 +122,40 @@ public class Detection {
                 //print how many times the differenceWrapper has been inserted into the database
                 DetectionLogAction detectionLogAction = (DetectionLogAction) detectionActionSelection;
 
+                ArrayList<DifferenceWrapper> differenceWrapperList2 = (ArrayList) differenceWrapperList.stream()
+                        .filter(c -> {
+                            BigDecimal lowAsk = c.getLowAsk();
+                            BigDecimal highBid = c.getHighBid();
+
+                            MarginDiffCompare marginDiffCompare = new MarginDiffCompare();
+
+                            //percentage of returns you will make
+                            BigDecimal difference = marginDiffCompare.findDiff(lowAsk, highBid);
+
+                            //the difference between the arbitrage margin and percentage of returns
+                            BigDecimal marginSubDiff = marginDiffCompare.diffWithMargin(lowAsk, highBid, 0.0);
+
+                            return marginSubDiff.compareTo(BigDecimal.ZERO) > 0;
+                        }).collect(Collectors.toList());
+
                 int dbInsertWaitTime = detectionLogAction.getWaitInterval();
-                if (dbInsertWaitTime >= 60000) {
-                    detectionService.insertDetectionRecords(differenceWrapperList);
-                    System.out.println("====================================================");
-                    System.out.println("====================================================");
-                    System.out.println();
-                    System.out.println("Inserted detection data into database: Round " + logCounter);
-                    System.out.println();
-                    System.out.println("====================================================");
-                    System.out.println("====================================================");
-                    Thread.sleep(detectionLogAction.getWaitInterval());
-                    logCounter++;
+                if (!differenceWrapperList2.isEmpty()) {
+                    if (dbInsertWaitTime >= 60000) {
+                        detectionService.insertDetectionRecords(differenceWrapperList2);
+                        System.out.println("====================================================");
+                        System.out.println("====================================================");
+                        System.out.println();
+                        System.out.println("Inserted detection data into database: Round " + logCounter);
+                        System.out.println();
+                        System.out.println("====================================================");
+                        System.out.println("====================================================");
+                        Thread.sleep(detectionLogAction.getWaitInterval());
+                        logCounter++;
+                    } else {
+                        throw new WaitTimeException("Please enter a wait time of over 1 minute, to prevent overloading the database");
+                    }
                 }
-                else throw  new WaitTimeException ("Please enter a wait time of over 1 minute, to prevent overloading the database");
-
-
             }
-
         } while (logMode); // make it infinite loop if log mode and 1 time if print
-
-
     }
 }

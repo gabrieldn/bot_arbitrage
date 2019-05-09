@@ -11,7 +11,7 @@ import java.math.BigDecimal;
 public class Email {
 
     // This address must be verified with Amazon SES.
-    String FROM = "ENTER THE EMAIL ADDRESS YOU WOULD LIKE TO SEND EMAILS HERE";
+    String FROM = "testebot@fourtime.com";
 
     String TO;
 

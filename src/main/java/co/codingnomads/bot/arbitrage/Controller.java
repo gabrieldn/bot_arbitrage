@@ -89,7 +89,6 @@ public class Controller {
         ArrayList<ExchangeSpecs> ExchangeList = new ArrayList<>();
         ExchangeList.add(new KrakenSpecs());
         ExchangeList.add(new GDAXSpecs());
-        ExchangeList.add(new BittrexSpecs());
         ExchangeList.add(new BinanceSpecs());
         ExchangeList.add(new PoloniexSpecs());
         ExchangeList.add(new BittrexSpecs());
@@ -117,18 +116,18 @@ public class Controller {
 
 
 //      Example of an Arbitrage print action that finds the best trading pair every hour
-      arbitragePrintAction.setArbitrageMargin(0.03);  //0.03 = 0.03 %
-      arbitrage.run(
-                    CurrencyPair.ETH_USD,
-                    ExchangeList,
-                    arbitragePrintAction);
+//      arbitragePrintAction.setArbitrageMargin(0.03);  //0.03 = 0.03 %
+//      arbitrage.run(
+//                    CurrencyPair.ETH_BTC,
+//                    ExchangeList,
+//                    arbitragePrintAction);
 
 //    Example of an Arbitrage email action
 //    arbitrageEmailAction.setArbitrageMargin(0.03);
-//    arbitrageEmailAction.getEmail().setTO("your-email-address");
+//    arbitrageEmailAction.getEmail().setTO("hugo@fourtime.com");
 //    emailService.insertEmailRecords(arbitrageEmailAction.getEmail());
 //    arbitrage.run(
-//                CurrencyPair.ETH_USD,
+//                CurrencyPair.ETH_BTC,
 //                ExchangeList,
 //                arbitrageEmailAction);
 
@@ -137,18 +136,21 @@ public class Controller {
 //Detection
 
         //List of currencyPairs you would like to check, for Detection only
-//      ArrayList<CurrencyPair> currencyPairList = new ArrayList<>();
-//      currencyPairList.add(CurrencyPair.ETH_USD);
-//      currencyPairList.add(CurrencyPair.ETH_BTC);
-//      currencyPairList.add(CurrencyPair.BTC_USD);
+      ArrayList<CurrencyPair> currencyPairList = new ArrayList<>();
+      currencyPairList.add(CurrencyPair.ETH_USD);
+      currencyPairList.add(CurrencyPair.ETH_BTC);
+      currencyPairList.add(CurrencyPair.BTC_USD);
 
 //    Example of a Detection print action
 //    DetectionActionSelection detectionActionSelection = new DetectionPrintAction();
 //    detection.run(currencyPairList, ExchangeList, detectionActionSelection);
 
 //    Example of a Detection log action
-//    DetectionActionSelection detectionActionSelection1 = new DetectionLogAction(60000);
-//    detection.run(currencyPairList, ExchangeList, detectionActionSelection1);
+    DetectionActionSelection detectionActionSelection1 = new DetectionLogAction(60000);
+    detection.run(
+            currencyPairList,
+            ExchangeList,
+            detectionActionSelection1);
 
 
     }

@@ -1,0 +1,34 @@
+version: "3.1"
+
+services:
+  teste:
+    image: teste
+    container_name: teste
+    build:
+      dockerfile: ./Dockerfile
+      context: .
+    depends_on:
+      - mysql
+    restart: always
+    networks:
+      - rede
+
+  mysql:
+    image: mysql:8.0.16
+    container_name: mysql
+    restart: always
+    ports:
+      - "3306:3306"
+    volumes:
+      - banco:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: 123
+    networks:
+      - rede
+
+networks:
+  rede:
+    driver: bridge
+
+volumes:
+  banco:
